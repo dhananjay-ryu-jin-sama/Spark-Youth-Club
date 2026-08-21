@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Spark Youth Club | See You Soon</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        saffron: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            DEFAULT: '#FF6F00',
+                            vibrant: '#FF5100',
+                            deep: '#C84000',
+                            light: '#FFA040',
+                            glow: '#FF7A00'
+                        },
+                        dark: {
+                            900: '#0c0a09',
+                            800: '#1c1917',
+                            700: '#292524'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif']
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.25, transform: 'scale(1)' },
+                            '50%': { opacity: 0.5, transform: 'scale(1.05)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0c0a09;
+            color: #ffffff;
+            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+        }
+
+        /* GPU-accelerated glow orbs using radial gradients (eliminates expensive filter:blur) */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+
+        /* Glassmorphism optimized for GPU composition */
+        .glass-card {
+            background: rgba(28, 25, 23, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transform: translateZ(0);
+        }
+
+        .glass-card-saffron {
+            background: linear-gradient(135deg, rgba(255, 111, 0, 0.15), rgba(28, 25, 23, 0.8));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 158, 64, 0.3);
+            transform: translateZ(0);
+        }
+
+        /* Text Gradients */
+        .text-gradient-saffron {
+            background: linear-gradient(135deg, #FFFFFF 20%, #FFB067 60%, #FF5100 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #sparkCanvas {
+            pointer-events: none;
+            transform: translateZ(0);
+        }
+
+        .announcement-float {
+            animation: announcementDrift 7s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes announcementDrift {
+            0%, 100% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate3d(0, -3px, 0) rotate(-0.7deg);
+            }
+            50% {
+                transform: translate3d(0, -8px, 0) rotate(1deg);
+            }
+            75% {
+                transform: translate3d(0, -3px, 0) rotate(0.45deg);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0c0a09; }
+        ::-webkit-scrollbar-thumb { background: #292524; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF6F00; }
+    </style>
+</head>
+<body class="relative min-h-screen bg-dark-900 flex flex-col justify-between selection:bg-saffron selection:text-white">
+
+    <!-- Interactive Dynamic Canvas Background -->
+    <canvas id="sparkCanvas" class="fixed inset-0 w-full h-full pointer-events-auto z-0"></canvas>
+
+    <!-- GPU-Accelerated Glowing Radial Light Orbs -->
+    <div class="ambient-orb w-96 h-96 top-[-10%] left-[-10%] animate-pulse-glow" 
+         style="background: radial-gradient(circle, rgba(255,81,0,0.3) 0%, rgba(255,81,0,0) 70%);"></div>
+    <div class="ambient-orb w-[30rem] h-[30rem] bottom-[-10%] right-[-10%] animate-pulse-glow" 
+         style="background: radial-gradient(circle, rgba(255,160,64,0.2) 0%, rgba(255,160,64,0) 70%); animation-delay: 2s;"></div>
+    <div class="ambient-orb w-80 h-80 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-slow" 
+         style="background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, rgba(249,115,22,0) 70%);"></div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="relative z-10 flex flex-col min-h-screen justify-between pointer-events-none">
+        
+        <!-- HEADER / NAVIGATION -->
+        <header class="w-full px-6 py-6 md:px-12 flex justify-between items-center max-w-7xl mx-auto pointer-events-auto">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 group cursor-pointer" onclick="createBurst(event)">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-saffron-vibrant to-amber-300 p-0.5 shadow-lg shadow-saffron-500/20 group-hover:scale-105 transition-transform">
+                    <div class="w-full h-full bg-dark-900/90 rounded-[14px] flex items-center justify-center">
+                        <i data-lucide="zap" class="w-6 h-6 text-saffron-light fill-saffron group-hover:rotate-12 transition-transform"></i>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-bold text-lg tracking-wider text-white">SPARK<span class="text-saffron-light">.YC</span></span>
+                    <span class="text-[10px] text-zinc-400 font-medium tracking-widest uppercase">Youth Club Community</span>
+                </div>
+            </div>
+
+            <!-- Header Badges & Actions -->
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-medium text-zinc-300">
+                    <span class="w-2 h-2 rounded-full bg-saffron animate-ping"></span>
+                    <span class="w-2 h-2 rounded-full bg-saffron absolute"></span>
+                    <span class="ml-1 text-saffron-100">Genesis Phase</span>
+                </div>
+
+                <button id="sparkSoundBtn" class="p-2.5 rounded-full glass-card hover:bg-white/10 hover:border-saffron/40 text-zinc-300 hover:text-white transition-all text-xs flex items-center gap-2" title="Audio Atmosphere">
+                    <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <main class="w-full max-w-6xl mx-auto px-6 py-8 flex flex-col items-center text-center justify-center flex-grow pointer-events-auto">
+            
+            <!-- Top Announcement Pill -->
+            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-card-saffron mb-8 announcement-float cursor-pointer group" onclick="igniteSparksRandomly()">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-saffron-light opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-saffron-vibrant"></span>
+                </span>
+                <span class="text-xs md:text-sm font-semibold tracking-wide text-saffron-100 group-hover:text-white transition-colors">
+                    ✨ Something extraordinary is taking shape
+                </span>
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-saffron-300 group-hover:rotate-45 transition-transform"></i>
+            </div>
+
+            <!-- HEADINGS -->
+            <h1 class="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight max-w-5xl leading-[1.08] mb-6">
+                <span class="text-white block">Welcome to</span>
+                <span class="text-gradient-saffron">Spark Youth Club</span>
+            </h1>
+
+            <!-- SUBTEXT -->
+            <div class="max-w-2xl mb-10 space-y-3">
+                <p class="text-xl sm:text-2xl md:text-3xl font-display font-semibold text-saffron-300 tracking-wide flex items-center justify-center gap-2">
+                    <span>—</span>
+                    <span>See You Soon</span>
+                    <span>—</span>
+                </p>
+                <p class="text-zinc-300 text-sm sm:text-base md:text-lg font-normal leading-relaxed">
+                    We are crafting a transformative haven for leaders, creators, athletes, and changemakers. Ignite your passion, unlock opportunities, and connect with a community of boundless ambition.
+                </p>
+            </div>
+
+            <!-- REGISTRATION -->
+            <div class="w-full max-w-md mx-auto mb-10">
+                <button
+                    type="button"
+                    id="openRegistrationBtn"
+                    onclick="openRegistration()"
+                    class="mx-auto bg-gradient-to-r from-saffron-vibrant to-saffron hover:from-saffron hover:to-amber-500 text-white font-semibold text-sm sm:text-base px-8 py-3.5 rounded-xl transition-all duration-500 shadow-lg shadow-saffron-500/20 flex items-center justify-center gap-2 active:scale-95 group">
+                    <span class="relative z-10 flex items-center gap-2 font-display">
+                        Register
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </span>
+                </button>
+
+                <form id="registrationForm" onsubmit="handleRegistration(event)" class="mt-0 max-h-0 scale-95 opacity-0 overflow-hidden rounded-2xl glass-card border-saffron/20 p-4 sm:p-5 text-left shadow-2xl space-y-4 transition-all duration-500 ease-out origin-top pointer-events-none">
+                    <div class="grid gap-4">
+                        <label class="block">
+                            <span class="text-xs uppercase font-semibold tracking-wider text-saffron-100">Name</span>
+                            <div class="mt-1.5 flex items-center rounded-xl glass-card px-3 focus-within:border-saffron-500 transition-all">
+                                <i data-lucide="user" class="w-4 h-4 text-zinc-400 mr-2"></i>
+                                <input
+                                    type="text"
+                                    id="registrantName"
+                                    required
+                                    placeholder="Your full name"
+                                    class="w-full bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none py-3"
+                                >
+                            </div>
+                        </label>
+
+                        <div>
+                            <span class="text-xs uppercase font-semibold tracking-wider text-saffron-100">Occupation</span>
+                            <div class="mt-1.5 grid grid-cols-2 gap-2 p-1 rounded-xl glass-card">
+                                <button
+                                    type="button"
+                                    id="studentToggle"
+                                    onclick="setOccupation('Student')"
+                                    class="occupation-toggle rounded-lg px-3 py-2.5 text-sm font-semibold transition-all bg-saffron text-white shadow-lg shadow-saffron-500/20">
+                                    Student
+                                </button>
+                                <button
+                                    type="button"
+                                    id="workingToggle"
+                                    onclick="setOccupation('Working')"
+                                    class="occupation-toggle rounded-lg px-3 py-2.5 text-sm font-semibold transition-all text-zinc-300 hover:text-white hover:bg-white/10">
+                                    Working
+                                </button>
+                            </div>
+                            <input type="hidden" id="occupationValue" value="Student">
+                        </div>
+
+                        <label class="block">
+                            <span id="placeLabel" class="text-xs uppercase font-semibold tracking-wider text-saffron-100">School / College Name</span>
+                            <div class="mt-1.5 flex items-center rounded-xl glass-card px-3 focus-within:border-saffron-500 transition-all">
+                                <i data-lucide="building-2" class="w-4 h-4 text-zinc-400 mr-2"></i>
+                                <input
+                                    type="text"
+                                    id="occupationPlace"
+                                    required
+                                    placeholder="Name of your school or college"
+                                    class="w-full bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none py-3"
+                                >
+                            </div>
+                        </label>
+
+                        <label class="block">
+                            <span class="text-xs uppercase font-semibold tracking-wider text-saffron-100">Mobile Number</span>
+                            <div class="mt-1.5 flex items-center rounded-xl glass-card px-3 focus-within:border-saffron-500 transition-all">
+                                <i data-lucide="phone" class="w-4 h-4 text-zinc-400 mr-2"></i>
+                                <input
+                                    type="tel"
+                                    id="mobileNumber"
+                                    required
+                                    inputmode="tel"
+                                    placeholder="Your mobile number"
+                                    class="w-full bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none py-3"
+                                >
+                            </div>
+                        </label>
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="registrationSubmitBtn"
+                        class="w-full bg-gradient-to-r from-saffron-vibrant to-saffron hover:from-saffron hover:to-amber-500 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all shadow-lg shadow-saffron-500/20 flex items-center justify-center gap-2 active:scale-95 group">
+                        <span class="relative z-10 flex items-center gap-2 font-display">
+                            Complete Registration
+                            <i data-lucide="sparkles" class="w-4 h-4 group-hover:rotate-45 transition-transform"></i>
+                        </span>
+                    </button>
+                </form>
+
+                <div id="registrationFeedback" class="text-xs text-saffron-300 mt-2 font-medium hidden flex items-center justify-center gap-1.5">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-saffron"></i>
+                    <span>Registration received. Welcome to Spark Youth Club!</span>
+                </div>
+            </div>
+
+            <!-- PILLARS & TRIGGERS -->
+            <!-- <div class="w-full max-w-4xl pt-2">
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-6">
+                    <button onclick="triggerPillar('Leadership')" class="px-4 py-2 rounded-xl glass-card text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-saffron/50 transition-all flex items-center gap-2 group">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 group-hover:scale-150 transition-transform"></span>
+                        Leadership Labs
+                    </button>
+                    <button onclick="triggerPillar('Creativity')" class="px-4 py-2 rounded-xl glass-card text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-saffron/50 transition-all flex items-center gap-2 group">
+                        <span class="w-2 h-2 rounded-full bg-saffron-vibrant group-hover:scale-150 transition-transform"></span>
+                        Creative Studio
+                    </button>
+                    <button onclick="triggerPillar('Sports')" class="px-4 py-2 rounded-xl glass-card text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-saffron/50 transition-all flex items-center gap-2 group">
+                        <span class="w-2 h-2 rounded-full bg-orange-400 group-hover:scale-150 transition-transform"></span>
+                        Sports & Fitness
+                    </button>
+                    <button onclick="triggerPillar('Community')" class="px-4 py-2 rounded-xl glass-card text-xs sm:text-sm font-medium text-zinc-300 hover:text-white hover:border-saffron/50 transition-all flex items-center gap-2 group">
+                        <span class="w-2 h-2 rounded-full bg-white group-hover:scale-150 transition-transform"></span>
+                        Social Impact
+                    </button>
+                </div> -->
+
+                <!-- Spark Trigger -->
+                <!-- <div class="inline-flex items-center gap-3 text-xs text-zinc-400 bg-dark-800/80 px-4 py-2 rounded-full border border-white/5">
+                    <span class="flex items-center gap-1.5 text-zinc-300">
+                        <i data-lucide="mouse-pointer" class="w-3.5 h-3.5 text-saffron"></i> 
+                        Tip: Click anywhere to create sparks
+                    </span>
+                    <span class="text-zinc-600">•</span>
+                    <button onclick="createSuperNova()" class="text-saffron-light hover:text-white font-semibold flex items-center gap-1 underline underline-offset-2">
+                        Supernova Burst
+                    </button>
+                </div>
+            </div> -->
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="w-full px-6 py-6 border-t border-white/5 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 pointer-events-auto">
+            <div class="flex items-center gap-2">
+                <span>© <span id="currentYear"></span> Spark Youth Club.</span>
+                <span class="hidden sm:inline">•</span>
+                <span>Fueling the Next Generation</span>
+            </div>
+
+            <div class="flex items-center gap-5">
+                <a href="#" onclick="createBurst(event); return false;" class="text-zinc-400 hover:text-saffron transition-colors" title="Instagram">
+                    <i data-lucide="instagram" class="w-4 h-4"></i>
+                </a>
+                <a href="#" onclick="createBurst(event); return false;" class="text-zinc-400 hover:text-saffron transition-colors" title="Twitter / X">
+                    <i data-lucide="twitter" class="w-4 h-4"></i>
+                </a>
+                <a href="#" onclick="createBurst(event); return false;" class="text-zinc-400 hover:text-saffron transition-colors" title="YouTube">
+                    <i data-lucide="youtube" class="w-4 h-4"></i>
+                </a>
+                <a href="#" onclick="createBurst(event); return false;" class="text-zinc-400 hover:text-saffron transition-colors" title="Discord">
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- TOAST POPUP NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 px-5 py-3 rounded-2xl glass-card-saffron shadow-2xl pointer-events-none">
+        <i data-lucide="flame" class="w-5 h-5 text-saffron"></i>
+        <div class="text-sm font-medium text-white" id="toastMessage">Spark ignited!</div>
+    </div>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        lucide.createIcons();
+
+        /* ========================================================
+           HIGH-PERFORMANCE CANVAS ENGINE
+           ======================================================== */
+        const canvas = document.getElementById('sparkCanvas');
+        const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        
+        // Cap DPR at 1.25 to prevent 4K GPU fill-rate throttling
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = Math.floor(width * dpr);
+            canvas.height = Math.floor(height * dpr);
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const mouse = { x: width / 2, y: height / 2, radius: 100 };
+        let lastMouseTime = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            const now = performance.now();
+            if (now - lastMouseTime > 30 && particles.length < MAX_TOTAL_PARTICLES) {
+                addParticle(new Particle(mouse.x, mouse.y, false, true));
+                lastMouseTime = now;
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+                if (particles.length < MAX_TOTAL_PARTICLES) {
+                    addParticle(new Particle(mouse.x, mouse.y, false, true));
+                }
+            }
+        }, { passive: true });
+
+        const sparkColors = ['#FFFFFF', '#FFE3C2', '#FFA24C', '#FF6F00', '#FF3D00', '#FFB300'];
+
+        class Particle {
+            constructor(x, y, isAmbient = true, isTrail = false) {
+                this.x = x !== undefined ? x : Math.random() * width;
+                this.y = y !== undefined ? y : (isAmbient ? Math.random() * height : height + 20);
+                this.isAmbient = isAmbient;
+                this.isTrail = isTrail;
+                
+                const speedMult = isTrail ? 2.2 : (isAmbient ? 0.6 : 3.5);
+                this.vx = (Math.random() - 0.5) * speedMult;
+                this.vy = isAmbient ? -Math.random() * 1.0 - 0.2 : -Math.random() * 4 - 1;
+
+                this.size = isTrail ? Math.random() * 2.5 + 1 : Math.random() * 2.2 + 0.8;
+                this.originalSize = this.size;
+                this.color = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+                this.alpha = isTrail ? 0.9 : Math.random() * 0.7 + 0.3;
+                this.decay = isTrail ? 0.03 : (isAmbient ? Math.random() * 0.003 + 0.001 : 0.015);
+                this.angle = Math.random() * Math.PI * 2;
+                this.angularSpeed = (Math.random() - 0.5) * 0.02;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += this.angularSpeed;
+                this.x += Math.sin(this.angle) * 0.3;
+
+                // Mouse repel
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist > 0 && dist < mouse.radius) {
+                    const force = (mouse.radius - dist) / mouse.radius;
+                    this.x -= (dx / dist) * force * 2.5;
+                    this.y -= (dy / dist) * force * 2.5;
+                }
+
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                if (this.alpha <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, 6.2831853);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        let particles = [];
+        let ambientCount = 0;
+        const MAX_AMBIENT_PARTICLES = Math.min(65, Math.max(35, Math.floor((width * height) / 25000)));
+        const MAX_TOTAL_PARTICLES = 160;
+        const LINK_DISTANCE = 55;
+        const LINK_DIST_SQ = LINK_DISTANCE * LINK_DISTANCE;
+
+        function addParticle(p) {
+            particles.push(p);
+            if (p.isAmbient) ambientCount++;
+        }
+
+        function removeParticle(i) {
+            if (particles[i].isAmbient) ambientCount--;
+            particles.splice(i, 1);
+        }
+
+        for (let i = 0; i < MAX_AMBIENT_PARTICLES; i++) {
+            addParticle(new Particle(Math.random() * width, Math.random() * height, true));
+        }
+
+        // Optimized Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            while (ambientCount < MAX_AMBIENT_PARTICLES && particles.length < MAX_TOTAL_PARTICLES) {
+                addParticle(new Particle(Math.random() * width, height + 10, true));
+            }
+
+            // Update & cull
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                if (p.alpha <= 0 || p.y < -20 || p.x < -20 || p.x > width + 20) {
+                    removeParticle(i);
+                }
+            }
+
+            // Batched Line Drawing (Massive performance boost)
+            const count = particles.length;
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255, 111, 0, 0.12)';
+            ctx.lineWidth = 0.5;
+
+            for (let i = 0; i < count; i++) {
+                const p1 = particles[i];
+                if (p1.alpha < 0.2) continue;
+                for (let j = i + 1; j < count; j++) {
+                    const p2 = particles[j];
+                    if (p2.alpha < 0.2) continue;
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dSq = dx * dx + dy * dy;
+
+                    if (dSq < LINK_DIST_SQ) {
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                    }
+                }
+            }
+            ctx.stroke();
+
+            // Draw particles
+            for (let i = 0; i < count; i++) {
+                particles[i].draw();
+            }
+
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+
+        /* ========================================================
+           INTERACTION & AUDIO
+           ======================================================== */
+        function createBurst(e) {
+            const clientX = e ? (e.clientX || (e.touches && e.touches[0].clientX)) : width / 2;
+            const clientY = e ? (e.clientY || (e.touches && e.touches[0].clientY)) : height / 2;
+
+            for (let i = 0; i < 25; i++) {
+                if (particles.length >= MAX_TOTAL_PARTICLES) break;
+                const p = new Particle(clientX, clientY, false, false);
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                p.vx = Math.cos(angle) * speed;
+                p.vy = Math.sin(angle) * speed;
+                p.decay = Math.random() * 0.02 + 0.015;
+                p.size = Math.random() * 3.5 + 1.5;
+                addParticle(p);
+            }
+            playSparkTone();
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                createBurst(e);
+            }
+        });
+
+        function createSuperNova() {
+            for (let i = 0; i < 80; i++) {
+                if (particles.length >= MAX_TOTAL_PARTICLES) break;
+                const p = new Particle(width / 2, height / 2, false, false);
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 10 + 2;
+                p.vx = Math.cos(angle) * speed;
+                p.vy = Math.sin(angle) * speed;
+                p.decay = Math.random() * 0.015 + 0.008;
+                p.size = Math.random() * 4 + 2;
+                addParticle(p);
+            }
+            showToast("✨ Cosmic Spark Supernova Released!");
+            playSparkTone(true);
+        }
+
+        function igniteSparksRandomly() {
+            for (let k = 0; k < 4; k++) {
+                setTimeout(() => {
+                    const rx = Math.random() * width;
+                    const ry = Math.random() * (height * 0.7);
+                    for (let i = 0; i < 15; i++) {
+                        if (particles.length >= MAX_TOTAL_PARTICLES) break;
+                        const p = new Particle(rx, ry, false, false);
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 5 + 1;
+                        p.vx = Math.cos(angle) * speed;
+                        p.vy = Math.sin(angle) * speed;
+                        addParticle(p);
+                    }
+                }, k * 100);
+            }
+            showToast("⚡ Spark Wave Ignited!");
+        }
+
+        function triggerPillar(name) {
+            igniteSparksRandomly();
+            showToast(`🚀 Exploring ${name} Initiative... Coming with Launch!`);
+        }
+
+        function openRegistration() {
+            const openBtn = document.getElementById('openRegistrationBtn');
+            const form = document.getElementById('registrationForm');
+
+            openBtn.classList.add('w-full', 'opacity-0', 'scale-y-125', 'pointer-events-none');
+            openBtn.classList.remove('px-8');
+            form.classList.remove('mt-0', 'max-h-0', 'scale-95', 'opacity-0', 'pointer-events-none');
+            form.classList.add('mt-4', 'max-h-[36rem]', 'scale-100', 'opacity-100');
+            lucide.createIcons();
+            createBurst();
+        }
+
+        function setOccupation(type) {
+            const studentBtn = document.getElementById('studentToggle');
+            const workingBtn = document.getElementById('workingToggle');
+            const occupationValue = document.getElementById('occupationValue');
+            const placeLabel = document.getElementById('placeLabel');
+            const occupationPlace = document.getElementById('occupationPlace');
+            const activeClasses = ['bg-saffron', 'text-white', 'shadow-lg', 'shadow-saffron-500/20'];
+            const inactiveClasses = ['text-zinc-300', 'hover:text-white', 'hover:bg-white/10'];
+
+            occupationValue.value = type;
+
+            if (type === 'Student') {
+                studentBtn.classList.add(...activeClasses);
+                studentBtn.classList.remove(...inactiveClasses);
+                workingBtn.classList.remove(...activeClasses);
+                workingBtn.classList.add(...inactiveClasses);
+                placeLabel.textContent = 'School / College Name';
+                occupationPlace.placeholder = 'Name of your school or college';
+            } else {
+                workingBtn.classList.add(...activeClasses);
+                workingBtn.classList.remove(...inactiveClasses);
+                studentBtn.classList.remove(...activeClasses);
+                studentBtn.classList.add(...inactiveClasses);
+                placeLabel.textContent = 'Company Name';
+                occupationPlace.placeholder = 'Name of your company';
+            }
+        }
+
+        function handleRegistration(e) {
+            e.preventDefault();
+            const form = document.getElementById('registrationForm');
+            const feedback = document.getElementById('registrationFeedback');
+            const btn = document.getElementById('registrationSubmitBtn');
+            const name = document.getElementById('registrantName');
+            const place = document.getElementById('occupationPlace');
+            const mobile = document.getElementById('mobileNumber');
+
+            if (name.value && place.value && mobile.value) {
+                btn.innerHTML = `<span class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Registered!</span>`;
+                btn.classList.remove('from-saffron-vibrant', 'to-saffron');
+                btn.classList.add('bg-emerald-600');
+                feedback.classList.remove('hidden');
+                lucide.createIcons();
+
+                createSuperNova();
+                showToast("Registration complete. Welcome to Spark Youth Club!");
+                Array.from(form.elements).forEach((element) => element.disabled = true);
+            }
+        }
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            msgEl.textContent = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        document.getElementById('sparkSoundBtn').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.setAttribute('data-lucide', 'volume-2');
+                showToast("🔊 Interactive audio enabled");
+            } else {
+                icon.setAttribute('data-lucide', 'volume-x');
+                showToast("🔇 Audio muted");
+            }
+            lucide.createIcons();
+        });
+
+        function playSparkTone(isSuper = false) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                const baseFreq = isSuper ? 600 : 800 + Math.random() * 400;
+                osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioCtx.currentTime + 0.12);
+
+                gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (isSuper ? 0.3 : 0.12));
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + (isSuper ? 0.3 : 0.12));
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
