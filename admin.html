@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0c0a09">
+  <title>Admin | Spark Youth Club</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M13 2 3 14h9l-1 8 10-12h-9l1-8z%22 fill=%22%23FF6F00%22/%3E%3C/svg%3E">
+  <script>
+    try { if (localStorage.getItem('spark.theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="adm-body">
+  <a class="adm-skip" href="#adm-main">Skip to content</a>
+
+  <!-- Boot: shown until the data layer is ready -->
+  <div class="adm-boot" id="boot" role="status" aria-live="polite">
+    <span class="adm-spin" aria-hidden="true"></span>
+    <span>Loading the admin panel</span>
+  </div>
+
+  <!-- Login -->
+  <main class="login" id="login" hidden>
+    <div class="login__aura" aria-hidden="true"></div>
+    <div class="login__grid" aria-hidden="true"></div>
+    <section class="login__card" aria-labelledby="login-title">
+      <a class="brand" href="index.html" aria-label="Spark Youth Club home">
+        <span class="brand__mark"><i data-icon="zap"></i></span>
+        <span><span class="brand__name">SPARK <b>YOUTH</b></span><span class="brand__sub">ISKCON Coimbatore</span></span>
+      </a>
+      <p class="eyebrow login__eyebrow">Admin panel</p>
+      <h1 class="login__title" id="login-title">Welcome back</h1>
+      <p class="login__lead">Sign in to manage events, sessions, photos and registrations.</p>
+      <form class="login__form" id="login-form" novalidate>
+        <label class="field">
+          <span>Username</span>
+          <input name="username" id="login-user" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <span class="pw">
+            <input name="password" id="login-pass" type="password" autocomplete="current-password" required>
+            <button type="button" class="pw__toggle" id="pw-toggle" aria-label="Show password" aria-pressed="false"><i data-icon="lock"></i></button>
+          </span>
+        </label>
+        <p class="login__error" id="login-error" role="alert"></p>
+        <button class="btn login__submit" id="login-submit" type="submit">Sign in <i data-icon="arrow"></i></button>
+      </form>
+      <div class="login__foot">
+        <a href="index.html"><i data-icon="arrow-left"></i> Back to the website</a>
+        <button type="button" class="icon-btn adm-theme" data-theme-toggle aria-label="Switch to light theme"></button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dashboard -->
+  <div class="adm" id="dash" hidden>
+    <aside class="adm-side" aria-label="Admin navigation">
+      <a class="brand adm-side__brand" href="#overview" aria-label="Admin overview">
+        <span class="brand__mark"><i data-icon="zap"></i></span>
+        <span><span class="brand__name">SPARK <b>ADMIN</b></span><span class="brand__sub">Youth Club</span></span>
+      </a>
+      <nav class="adm-nav" id="adm-nav" aria-label="Sections"></nav>
+      <div class="adm-side__foot">
+        <a class="adm-side__link" href="index.html" target="_blank" rel="noopener"><i data-icon="arrow-up-right"></i> View site</a>
+        <div class="adm-side__row">
+          <button type="button" class="icon-btn adm-theme" data-theme-toggle aria-label="Switch to light theme"></button>
+          <button type="button" class="btn btn--ghost btn--sm" data-logout><i data-icon="logout"></i> Log out</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="adm-main" id="adm-main" tabindex="-1">
+      <header class="adm-top">
+        <a class="brand adm-top__brand" href="#overview" aria-label="Admin overview">
+          <span class="brand__mark"><i data-icon="zap"></i></span>
+        </a>
+        <div class="adm-top__title">
+          <p class="eyebrow" id="view-eyebrow">Admin</p>
+          <h1 class="adm-h1" id="view-title">Overview</h1>
+        </div>
+        <div class="adm-top__tools">
+          <a class="icon-btn adm-top__mobile" href="index.html" target="_blank" rel="noopener" aria-label="View site"><i data-icon="arrow-up-right"></i></a>
+          <button type="button" class="icon-btn adm-theme adm-top__mobile" data-theme-toggle aria-label="Switch to light theme"></button>
+          <a class="icon-btn adm-top__mobile" href="#settings" aria-label="Settings and log out"><i data-icon="lock"></i></a>
+        </div>
+      </header>
+
+      <div class="adm-banner" id="demo-banner" role="note" hidden></div>
+
+      <section class="adm-view" data-view="overview" aria-labelledby="view-title"></section>
+      <section class="adm-view" data-view="events" aria-labelledby="view-title" hidden></section>
+      <section class="adm-view" data-view="sessions" aria-labelledby="view-title" hidden></section>
+      <section class="adm-view" data-view="gallery" aria-labelledby="view-title" hidden></section>
+      <section class="adm-view" data-view="registrations" aria-labelledby="view-title" hidden></section>
+      <section class="adm-view" data-view="settings" aria-labelledby="view-title" hidden></section>
+    </div>
+
+    <nav class="adm-tabs" id="adm-tabs" aria-label="Sections"></nav>
+  </div>
+
+  <noscript><p class="adm-noscript">The admin panel needs JavaScript turned on.</p></noscript>
+  <script>
+    // On a web server the readable source modules are used. When the page is opened straight
+    // from a folder (file://) browsers block modules, so a pre-built single file is used instead.
+    (function () {
+      var s = document.createElement('script');
+      if (location.protocol === 'file:') { s.src = 'assets/js/dist/admin.bundle.js'; s.defer = true; }
+      else { s.type = 'module'; s.src = 'assets/js/admin.js'; }
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
